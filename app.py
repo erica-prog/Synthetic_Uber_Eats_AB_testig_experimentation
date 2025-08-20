@@ -18,33 +18,34 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Uber Eats theme
+# Custom CSS for Uber Eats theme - White background with green/black accents
 st.markdown("""
 <style>
-    /* Main app styling */
+    /* Main app styling - White background */
     .stApp {
-        background-color: #000000;
+        background-color: #ffffff;
     }
     
     /* Sidebar styling */
     .css-1d391kg {
-        background-color: #1a1a1a;
+        background-color: #f8f9fa;
+        border-right: 2px solid #5fb709;
     }
     
     /* Main content area */
     .main .block-container {
-        background-color: #000000;
-        color: #ffffff;
+        background-color: #ffffff;
+        color: #000000;
     }
     
-    /* Headers styling */
+    /* Headers styling - Black text */
     h1, h2, h3, h4, h5, h6 {
-        color: #ffffff !important;
+        color: #000000 !important;
     }
     
-    /* Metric cards with Uber Eats green */
+    /* Metric cards with dark green */
     .metric-card {
-        background: linear-gradient(135deg, #5fb709 0%, #4a9207 100%);
+        background: linear-gradient(135deg, #2d5016 0%, #1f3810 100%);
         padding: 1rem;
         border-radius: 10px;
         color: white;
@@ -52,7 +53,7 @@ st.markdown("""
         border: 1px solid #5fb709;
     }
     
-    /* Success cards with Uber Eats green */
+    /* Success cards with bright green */
     .success-card {
         background: linear-gradient(135deg, #5fb709 0%, #4a9207 100%);
         padding: 1rem;
@@ -62,7 +63,7 @@ st.markdown("""
         border: 1px solid #5fb709;
     }
     
-    /* Warning cards with Uber red accent */
+    /* Warning cards with red accent */
     .warning-card {
         background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         padding: 1rem;
@@ -72,9 +73,9 @@ st.markdown("""
         border: 1px solid #e74c3c;
     }
     
-    /* Executive summary with Uber black and green */
+    /* Executive summary with dark green */
     .executive-summary {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        background: linear-gradient(135deg, #2d5016 0%, #1f3810 100%);
         padding: 2rem;
         border-radius: 15px;
         color: white;
@@ -84,35 +85,36 @@ st.markdown("""
     
     /* Streamlit metrics styling */
     .css-1xarl3l {
-        background-color: #1a1a1a;
-        border: 1px solid #5fb709;
+        background-color: #f8f9fa;
+        border: 2px solid #5fb709;
         border-radius: 10px;
         padding: 1rem;
     }
     
     /* Text color adjustments */
     .css-10trblm {
-        color: #ffffff;
+        color: #000000;
     }
     
     /* Select box styling */
     .stSelectbox > div > div {
-        background-color: #1a1a1a;
-        color: #ffffff;
-        border: 1px solid #5fb709;
+        background-color: #ffffff;
+        color: #000000;
+        border: 2px solid #5fb709;
     }
     
     /* Radio button styling */
     .stRadio > div {
-        background-color: #1a1a1a;
+        background-color: #f8f9fa;
         padding: 1rem;
         border-radius: 10px;
-        border: 1px solid #5fb709;
+        border: 2px solid #5fb709;
+        color: #000000;
     }
     
     /* Checkbox styling */
     .stCheckbox > div {
-        color: #ffffff;
+        color: #000000;
     }
     
     /* Button styling */
@@ -131,20 +133,21 @@ st.markdown("""
     
     /* Dataframe styling */
     .dataframe {
-        background-color: #1a1a1a;
-        color: #ffffff;
+        background-color: #ffffff;
+        color: #000000;
+        border: 1px solid #5fb709;
     }
     
     /* Expander styling */
     .streamlit-expanderHeader {
-        background-color: #1a1a1a;
-        color: #ffffff;
-        border: 1px solid #5fb709;
+        background-color: #f8f9fa;
+        color: #000000;
+        border: 2px solid #5fb709;
     }
     
     /* Custom Uber Eats title styling */
     .uber-title {
-        background: linear-gradient(90deg, #5fb709 0%, #ffffff 50%, #5fb709 100%);
+        background: linear-gradient(90deg, #5fb709 0%, #000000 50%, #5fb709 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -162,6 +165,11 @@ st.markdown("""
         border-radius: 5px;
         margin: 1rem 0;
         font-weight: bold;
+    }
+    
+    /* Sidebar text color */
+    .css-1d391kg .stMarkdown {
+        color: #000000;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -501,20 +509,6 @@ if analysis_type == "Overview":
     fig.add_trace(go.Box(y=control_data, name="Control", boxpoints="outliers"), row=1, col=2)
     fig.add_trace(go.Box(y=treatment_data, name="Treatment", boxpoints="outliers"), row=1, col=2)
     
-    # Statistical summary
-    summary_data = pd.DataFrame({
-        'Metric': ['Mean', 'Std Dev', 'Median', 'Skewness', 'Kurtosis'],
-        'Control': [np.mean(control_data), np.std(control_data), np.median(control_data),
-                   skew(control_data), kurtosis(control_data)],
-        'Treatment': [np.mean(treatment_data), np.std(treatment_data), np.median(treatment_data),
-                     skew(treatment_data), kurtosis(treatment_data)]
-    })
-    
-    fig.add_trace(go.Table(
-        header=dict(values=list(summary_data.columns)),
-        cells=dict(values=[summary_data[col] for col in summary_data.columns])
-    ), row=2, col=1)
-    
     # Effect size benchmarks
     effect_labels = ['Observed', 'Small (0.2)', 'Medium (0.5)', 'Large (0.8)']
     effect_values = [abs(test_results['cohens_d']), 0.2, 0.5, 0.8]
@@ -522,8 +516,35 @@ if analysis_type == "Overview":
     
     fig.add_trace(go.Bar(x=effect_labels, y=effect_values, marker_color=colors), row=2, col=2)
     
+    # Add text annotation for statistical summary in empty subplot
+    fig.add_annotation(
+        x=0.5, y=0.5,
+        text=f"<b>Statistical Summary</b><br>" +
+             f"Control: Mean={np.mean(control_data):.3f}, Std={np.std(control_data):.3f}<br>" +
+             f"Treatment: Mean={np.mean(treatment_data):.3f}, Std={np.std(treatment_data):.3f}<br>" +
+             f"Skewness: {skew(control_data):.3f} vs {skew(treatment_data):.3f}<br>" +
+             f"Kurtosis: {kurtosis(control_data):.3f} vs {kurtosis(treatment_data):.3f}",
+        xref="x3", yref="y3",
+        showarrow=False,
+        font=dict(size=12),
+        bgcolor="rgba(255,255,255,0.8)",
+        bordercolor="black",
+        borderwidth=1
+    )
+    
     fig.update_layout(height=800, showlegend=True, title_text=f"Comprehensive Analysis: {selected_metric}")
     st.plotly_chart(fig, use_container_width=True)
+    
+    # Separate statistical summary table
+    st.subheader("Statistical Summary")
+    summary_data = pd.DataFrame({
+        'Metric': ['Mean', 'Std Dev', 'Median', 'Skewness', 'Kurtosis'],
+        'Control': [np.mean(control_data), np.std(control_data), np.median(control_data),
+                   skew(control_data), kurtosis(control_data)],
+        'Treatment': [np.mean(treatment_data), np.std(treatment_data), np.median(treatment_data),
+                     skew(treatment_data), kurtosis(treatment_data)]
+    })
+    st.dataframe(summary_data, use_container_width=True)
 
 elif analysis_type == "Statistical Testing":
     st.subheader("🔬 Advanced Statistical Analysis")
